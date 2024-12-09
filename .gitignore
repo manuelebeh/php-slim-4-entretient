@@ -1,0 +1,43 @@
+# Ignore composer dependencies
+/vendor/
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore cache and logs
+/cache/
+*.log
+
+# Ignore generated files
+/public/storage/
+public/uploads/
+
+# Ignore IDE/editor configurations
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore system files
+*.DS_Store
+Thumbs.db
+*.bak
+*.swp
+
+# Ignore coverage and testing artifacts
+/tests/_output/
+/tests/_support/_generated/
+coverage.xml
+coverage/
+
+# Ignore node_modules if using any frontend build tools
+node_modules/
+
+# Ignore PHPStorm specific files
+.phpstorm.meta.php
+
+# Ignore other auto-generated files
+composer.lock
+phpunit.xml
+phpunit.xml.dist

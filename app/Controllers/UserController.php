@@ -49,23 +49,48 @@ class UserController
         try {
             $data = json_decode($request->getBody()->getContents(), true);
 
+            // Vérifiez si les données sont valides
             if ($data === null) {
-                return $response->withStatus(400)->write(json_encode(['error' => 'Invalid JSON provided']));
+                $response->getBody()->write(json_encode(['error' => 'Invalid JSON provided']));
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
 
             if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email'])) {
-                return $response->withStatus(400)->write(json_encode(['error' => 'Missing required fields']));
+                $response->getBody()->write(json_encode(['error' => 'Missing required fields']));
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
 
-            $user = $this->userService->createUser($data);
+            // Créez un nouvel utilisateur
+            $user = new User(
+                null, 
+                $data['first_name'], 
+                $data['last_name'], 
+                $data['email']
+            );
 
-            return $this->jsonResponse($response, $user, 201);
+            $isCreated = $this->userService->createUser($user);
 
+            if ($isCreated) {
+                $responseData = [
+                    'message' => 'User created successfully',
+                    'data' => [
+                        'first_name' => $user->getFirstName(),
+                        'last_name' => $user->getLastName(),
+                        'email' => $user->getEmail(),
+                    ]
+                ];
+                $response->getBody()->write(json_encode($responseData));
+                return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+            }
+
+            $response->getBody()->write(json_encode(['error' => 'User creation failed']));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
-            return $response->withStatus(500)->write(json_encode([
+            $response->getBody()->write(json_encode([
                 'error' => 'Internal Server Error',
                 'message' => $e->getMessage(),
             ]));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
@@ -74,26 +99,50 @@ class UserController
     {
         try {
             $data = json_decode($request->getBody()->getContents(), true);
-    
+
+            // Vérifiez si les données sont valides
+            if ($data === null) {
+                $response->getBody()->write(json_encode(['error' => 'Invalid JSON provided']));
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            }
+
             if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email'])) {
                 $response->getBody()->write(json_encode(['error' => 'Missing required fields']));
-                return $response->withStatus(400);
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
-    
-            $user = $this->userService->updateUser((int)$args['id'], $data);
-    
-            if ($user) {
-                return $this->jsonResponse($response, $user);
+
+            // Récupérez l'utilisateur existant avec l'ID passé dans l'URL
+            $user = new User(
+                (int)$args['id'], 
+                $data['first_name'], 
+                $data['last_name'], 
+                $data['email']
+            );
+
+            $isUpdated = $this->userService->updateUser($user);
+
+            if ($isUpdated) {
+                $responseData = [
+                    'message' => 'User updated successfully',
+                    'data' => [
+                        'id' => $user->getId(),
+                        'first_name' => $user->getFirstName(),
+                        'last_name' => $user->getLastName(),
+                        'email' => $user->getEmail(),
+                    ]
+                ];
+                $response->getBody()->write(json_encode($responseData));
+                return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
             }
-    
+
             $response->getBody()->write(json_encode(['error' => 'User not found']));
-            return $response->withStatus(404);
+            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'error' => 'Internal Server Error',
                 'message' => $e->getMessage(),
             ]));
-            return $response->withStatus(500);
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 

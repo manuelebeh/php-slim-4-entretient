@@ -54,25 +54,33 @@ class UserService
     }
 
     // Créer un utilisateur
-    public function createUser(array $data): bool
+    public function createUser(User $user): bool
     {
         $stmt = $this->db->prepare("
             INSERT INTO users (first_name, last_name, email, created_at, updated_at)
             VALUES (:first_name, :last_name, :email, NOW(), NOW())
         ");
-        return $stmt->execute($data);
+        return $stmt->execute([
+            'first_name' => $user->getFirstName(),
+            'last_name' => $user->getLastName(),
+            'email' => $user->getEmail(),
+        ]);
     }
 
     // Mettre à jour un utilisateur
-    public function updateUser(int $id, array $data): bool
+    public function updateUser(User $user): bool
     {
         $stmt = $this->db->prepare("
             UPDATE users 
             SET first_name = :first_name, last_name = :last_name, email = :email, updated_at = NOW()
             WHERE id = :id
         ");
-        $data['id'] = $id;
-        return $stmt->execute($data);
+        return $stmt->execute([
+            'id' => $user->getId(),
+            'first_name' => $user->getFirstName(),
+            'last_name' => $user->getLastName(),
+            'email' => $user->getEmail(),
+        ]);
     }
 
     // Supprimer un utilisateur

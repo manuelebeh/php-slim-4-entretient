@@ -51,18 +51,32 @@ class AddressController
 
             if ($data === null) {
                 $response->getBody()->write(json_encode(['error' => 'Invalid JSON provided']));
-                return $response->withStatus(400);
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
 
-            $address = $this->addressService->createAddress($data);
+            $address = new Address(
+                null,
+                $data['user_id'] ?? null,
+                $data['street'] ?? null,
+                $data['city'] ?? null,
+                $data['country'] ?? null,
+                $data['postal_code'] ?? null,
+                null,
+                null
+            );
 
-            return $this->jsonResponse($response, $address, 201);
+            $created = $this->addressService->createAddress($address);
+
+            if ($created) {
+                $response->getBody()->write(json_encode(['message' => 'Address created successfully']));
+                return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+            }
+
+            $response->getBody()->write(json_encode(['error' => 'Failed to create address']));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
-            $response->getBody()->write(json_encode([
-                'error' => 'Internal Server Error',
-                'message' => $e->getMessage(),
-            ]));
-            return $response->withStatus(500);
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
@@ -70,16 +84,37 @@ class AddressController
     public function update(Request $request, Response $response, array $args): Response
     {
         try {
+            $id = (int)$args['id'];
             $data = json_decode($request->getBody()->getContents(), true);
-            $address = $this->addressService->updateAddress((int)$args['id'], $data);
 
-            if ($address) {
-                return $this->jsonResponse($response, $address);
+            if ($data === null) {
+                $response->getBody()->write(json_encode(['error' => 'Invalid JSON provided']));
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
 
-            return $response->withStatus(404, 'Address not found');
+            $address = new Address(
+                $id,
+                $data['user_id'] ?? null,
+                $data['street'] ?? null,
+                $data['city'] ?? null,
+                $data['country'] ?? null,
+                $data['postal_code'] ?? null,
+                null,
+                null
+            );
+
+            $updated = $this->addressService->updateAddress($id, $address);
+
+            if ($updated) {
+                $response->getBody()->write(json_encode(['message' => 'Address updated successfully']));
+                return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+            }
+
+            $response->getBody()->write(json_encode(['error' => 'Address not found']));
+            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
-            return $response->withStatus(500)->withJson(['error' => $e->getMessage()]);
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
@@ -87,15 +122,19 @@ class AddressController
     public function delete(Request $request, Response $response, array $args): Response
     {
         try {
-            $deleted = $this->addressService->deleteAddress((int)$args['id']);
+            $id = (int)$args['id'];
+            $deleted = $this->addressService->deleteAddress($id);
 
             if ($deleted) {
-                return $response->withStatus(204);
+                $response->getBody()->write(json_encode(['message' => 'Address deleted successfully']));
+                return $response->withStatus(204)->withHeader('Content-Type', 'application/json');
             }
 
-            return $response->withStatus(404, 'Address not found');
+            $response->getBody()->write(json_encode(['error' => 'Address not found']));
+            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
-            return $response->withStatus(500)->withJson(['error' => $e->getMessage()]);
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 

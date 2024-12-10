@@ -2,66 +2,71 @@
 
 namespace App\Models;
 
-class Address
+class Address implements \JsonSerializable
 {
-    protected int $id;
-    protected string $user_id;
-    protected string $street;
-    protected string $city;
-    protected string $country;
-    protected string $postal_code;
-    protected string $created_at;
-    protected string $updated_at;
+    public function __construct(
+        private ?int $id = null,
+        private ?int $user_id = null,
+        private ?string $street = null,
+        private ?string $city = null,
+        private ?string $country = null,
+        private ?string $postal_code = null,
+        private ?string $created_at = null,
+        private ?string $updated_at = null
+    ) {}
 
-    public function __construct(int $id, string $user_id, string $street, string $city, string $country, string $postal_code, string $created_at, string $updated_at)
+    // Implémentation de JsonSerializable
+    public function jsonSerialize(): array
     {
-        $this->id = $id;
-        $this->user_id = $user_id;
-        $this->street = $street;
-        $this->city = $city;
-        $this->country = $country;
-        $this->postal_code = $postal_code;
-        $this->created_at = $created_at;
-        $this->updated_at = $updated_at;
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'street' => $this->street,
+            'city' => $this->city,
+            'country' => $this->country,
+            'postal_code' => $this->postal_code,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
     }
 
     // Getters
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUserId(): int
+    public function getUserId(): ?int
     {
         return $this->user_id;
     }
 
-    public function getStreet(): string
+    public function getStreet(): ?string
     {
         return $this->street;
     }
 
-    public function getCity(): string
+    public function getCity(): ?string
     {
         return $this->city;
     }
 
-    public function getCountry(): string
+    public function getCountry(): ?string
     {
         return $this->country;
     }
 
-    public function getPostalCode(): string
+    public function getPostalCode(): ?string
     {
         return $this->postal_code;
     }
 
-    public function getCreatedAt(): string
+    public function getCreatedAt(): ?string
     {
         return $this->created_at;
     }
 
-    public function getUpdatedAt(): string
+    public function getUpdatedAt(): ?string
     {
         return $this->updated_at;
     }
@@ -97,4 +102,3 @@ class Address
         $this->updated_at = $updated_at;
     }
 }
-

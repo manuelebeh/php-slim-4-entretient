@@ -7,7 +7,8 @@
         "laravel/serializable-closure": "^2.0",
         "php-di/invoker": "2.0",
         "opis/closure": "^3.6",
-        "php-di/php-di": "^6.3"
+        "php-di/php-di": "^6.3",
+        "vlucas/phpdotenv": "^5.6"
     },
     "autoload": {
         "psr-4": {

@@ -4,7 +4,10 @@ use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use App\Database\Connection;
 
-require __DIR__ . '/vendor/autoload.php';
+// Chargement des variables d'environnement
+require_once __DIR__ . '/vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 // Créer un builder pour le conteneur DI
 $containerBuilder = new ContainerBuilder();

@@ -6,8 +6,9 @@ use App\Services\UserService;
 use App\Models\User;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Contracts\ControllerInterface;
 
-class UserController
+class UserController implements ControllerInterface
 {
     private UserService $userService;
 

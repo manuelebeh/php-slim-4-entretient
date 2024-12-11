@@ -6,8 +6,9 @@ use App\Services\AddressService;
 use App\Models\Address;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Contracts\ControllerInterface;
 
-class AddressController
+class AddressController implements ControllerInterface
 {
     private AddressService $addressService;
 
